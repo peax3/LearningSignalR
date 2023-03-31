@@ -1,3 +1,5 @@
+using SignalRServer.Hubs;
+
 namespace SignalRServer
 {
     public class Program
@@ -8,6 +10,8 @@ namespace SignalRServer
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
@@ -29,6 +33,8 @@ namespace SignalRServer
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapHub<LearningHub>("/learningHub");
 
             app.Run();
         }
