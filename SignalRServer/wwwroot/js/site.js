@@ -20,6 +20,42 @@ $('#btn-broadcast').click(function () {
     connection.invoke("BroadcastMessage", message).catch(err => console.error(err.toString()));
 });
 
+// trigger event call
+$('#btn-others-message').click(function () {
+    let message = $('#others-message').val();
+    connection.invoke("SendToOthers", message).catch(err => console.error(err.toString()));
+});
+
+// trigger event call
+$('#btn-self-message').click(function () {
+    let message = $('#self-message').val();
+    connection.invoke("SendToCaller", message).catch(err => console.error(err.toString()));
+});
+
+// trigger event call
+$('#btn-individual-message').click(function () {
+    let message = $('#individual-message').val();
+    let connectionId = $('#connection-for-message').val();
+    connection.invoke("SendToIndividual", connectionId, message).catch(err => console.error(err.toString()));
+});
+
+$('#btn-group-message').click(function () {
+    let message = $('#group-message').val();
+    let group = $('#group-for-message').val();
+    connection.invoke("SendToGroup", group, message).catch(err => console.error(err.toString()));
+});
+
+$('#btn-group-add').click(function () {
+    let group = $('#group-to-add').val();
+    connection.invoke("AddUserToGroup", group).catch(err => console.error(err.toString()));
+});
+
+$('#btn-group-remove').click(function () {
+    let group = $('#group-to-remove').val();
+    console.log(group)
+    connection.invoke("RemoveUserFromGroup", group).catch(err => console.error(err.toString()));
+});
+
 async function start() {
     try {
         await connection.start();
