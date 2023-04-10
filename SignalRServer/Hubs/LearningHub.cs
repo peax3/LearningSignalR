@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Runtime.CompilerServices;
 
 namespace SignalRServer.Hubs
 {
@@ -41,6 +42,23 @@ namespace SignalRServer.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
             await Clients.Caller.ReceiveMessage($"Current user removed from {groupName} group");
             await Clients.Others.ReceiveMessage($"User {Context.ConnectionId} removed from {groupName} group");
+        }
+
+        public async Task BroadcastStream(IAsyncEnumerable<string> stream)
+        {
+            await foreach(var streamItem in stream) {
+                await Clients.Caller.ReceiveMessage($"Server received item {streamItem}");
+            }
+        }
+
+        public async IAsyncEnumerable<string> TriggerStream(int jobsCount, [EnumeratorCancellation]CancellationToken cancellationToken)
+        {
+            for (int i = 0; i < jobsCount; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                yield return $"job {i} executed successfully";
+                await Task.Delay(1000, cancellationToken);
+            }
         }
 
         public override async Task OnConnectedAsync()

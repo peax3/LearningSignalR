@@ -17,7 +17,30 @@ connection.on("ReceiveMessage", (message) => {
     // trigger event call
 $('#btn-broadcast').click(function () {
     let message = $('#broadcast').val();
-    connection.invoke("BroadcastMessage", message).catch(err => console.error(err.toString()));
+
+    if (message.includes(';')) {
+        let messages = message.split(';');
+        let subject = new signalR.Subject();
+        connection.send("BroadcastStream", subject).catch(err => console.error(err.toString()));
+
+        for (const element of messages) {
+            subject.next(element)
+        }
+
+        subject.complete()
+    } else {
+        connection.invoke("BroadcastMessage", message).catch(err => console.error(err.toString()));
+    }
+});
+
+// trigger event call
+$('#btn-trigger-stream').click(function () {
+    let numberOfJobs = parseInt($('#number-of-jobs').val(), 10);
+
+    connection.stream("TriggerStream", numberOfJobs).subscribe({
+        next: (message) => 
+            $('#signalr-message-panel').prepend($('<div />').text(message))
+    })
 });
 
 // trigger event call
